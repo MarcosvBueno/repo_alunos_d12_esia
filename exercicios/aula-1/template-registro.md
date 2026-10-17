@@ -1,20 +1,22 @@
 # Registro individual — AV1.1
 
-**Limite: uma página, incluindo evidências essenciais.** Estudante: ___ — Data: ___
+**Limite: uma página, incluindo evidências essenciais.** Estudante: Marcos Vinicius Bueno Estevam — Data: 16/10/2026
 Origem: tarefas T1–T3 fictícias do enunciado; modalidade: execução própria / resposta simulada (marque).
 
-| Tarefa | Modo | Tempo até 1ª versão | Tempo até pronto e verificado | Idas e vindas | % corrigido à mão | O que a IA errou | Como verifiquei |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| T1 | A: ___ |  |  |  |  |  |  |
-| T1 | B: ___ |  |  |  |  |  |  |
-| T2 | ___ |  |  |  |  |  |  |
+| Tarefa | Modo                 | Tempo até 1ª versão | Tempo até pronto e verificado | Idas e vindas | % corrigido à mão | O que a IA errou | Como verifiquei                                                                                                                                                                                                                                          |
+| ------ | -------------------- | ------------------- | ----------------------------- | ------------- | ----------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| T1     | A: Conversa          | 4min\*              | 6min\*                        | 0             | 0%                | Não errou        | Rodei `python -B testes/test_miniloja.py --codigo caso`: 10 de 11 passam; v07, v08, v09 e v11 passam (v10 falha até o T2). Antes da correção, v08 e v09 falhavam.                                                                                        |
+| T1     | B: Editar com escopo | 2min\*              | 2min\*                        | 0             | 0%                | Não errou        | Depois da alteração do agente, rodei `python -B testes/test_miniloja.py --codigo caso`. `v08` e `v09` passaram, e `v07` e `v11` continuaram passando. `v10` permaneceu falhando até a implementação da T2.                                               |
+| T2     | Conversa             | 1min\*              | 2min\*                        | 0             | 0%                | Não errou        | Depois de implementar a validação completa, rodei `python -B testes/test_miniloja.py --codigo caso`. As 11 verificações passaram. Em particular, `v10` confirmou status `422` e os erros de `nome`, `email` e `cpf`; `v07` e `v11` continuaram passando. |
 
-**Trecho essencial de evidência (comando e saída que sustentam "verificado"):** ___
+**Trecho essencial de evidência (comando e saída que sustentam "verificado"):** T1: v08 ok; v09 ok; v10 FAIL (400 != 422); 10/11 verificações passaram.
+T2: v10 ok; Ran 11 tests; OK.
+Comando: `python3 -B testes/test_miniloja.py --codigo caso`
 
-**T3 (hipotética): raio de impacto ___; oráculo disponível ___; permissões que concederia ___; modo e por quê ___.**
+**T3 (hipotética): raio de impacto:** alto (produção às 02h, pouca gente para revisar). Reversibilidade: ler não altera o estado; reiniciar, reverter versão ou mudar configuração são difíceis de desfazer; **oráculo disponível:** parcial. Métricas e logs dão a linha de base e a linha do tempo para conferir hipóteses, mas nada prova a causa antes de agir; a correção só se confirma depois, com a latência de volta à linha de base; **permissões que concederia:** sem perguntar: só leitura de métricas e logs do serviço afetado (credencial temporária somente leitura, sem segredos nem rede externa). Outros comandos, só com minha aprovação; escrita, reinício, deploy e mudança de configuração, negados; **modo e por quê:** delegar a um agente em modo manual, só para coletar e correlacionar. Com impacto alto e escrita difícil de desfazer, concedo só leitura, e o oráculo parcial me deixa conferir cada achado. Log pode carregar prompt injection, por isso o agente não escreve nem acessa a rede. A decisão e qualquer ação em produção são minhas. Análise manual; execução não realizada.
 
-**Alternativa para ___:** ___ **Comparação com minha escolha (restrição e consequência):** ___ **Limite da comparação e condição para rever a escolha:** ___
+**Alternativa para T3:** conversar (chat), sem agente executando comandos. **Comparação com minha escolha (restrição e consequência):** restrição: o modelo só vê o que eu colo e eu rodo cada consulta; consequência: ele não age em produção, mas o diagnóstico demora mais às 02h. **Limite da comparação e condição para rever a escolha:** não medi o tempo de nenhum modo nem sei se métricas e logs bastam para achar a causa; isso calibra meu julgamento, não prova qual modo é melhor. Minha aprovação às 02h pode falhar (viés de automação); a barreira real é a credencial somente leitura. Passo ao chat se não puder garantir essa credencial e a rede bloqueada, ou se um log trouxer instrução dirigida ao agente. Só libero uma escrita com hipótese confirmada em métrica e log, ação reversível e aviso ao time. Sem hipótese verificável em 30min, peço apoio.
 
-**Procedência/IA:** não utilizada / ferramenta e modelo visíveis: ___; tarefa delegada e contexto: ___; trecho aproveitado: ___; minha verificação/intervenção: ___. Use "não informado" para metadados indisponíveis. O raciocínio e a decisão registrados são meus.
+**Procedência/IA:** **ferramenta e modelo visíveis:** Claude Code (Sonnet 5.5); **tarefa delegada e contexto:** Usei IA para analisar e implementar as validações de T1 e T2, utilizando o modo de planejamento e modo manual, e para redigir a decisão de T3, a partir do enunciado e do material de apoio; **trecho aproveitado:** a estrutura de validação do CPF em `_digito_verificador` e `_cpf_valido`, e a coleta dos erros de cadastro em `_validar`, com retorno `422`. Apliquei essas ideias em `caso/miniloja/cadastro.py` e conferi o comportamento com os testes `v08`, `v09` e `v10`. Também aproveitei a explicação de T3 e da alternativa; **minha verificação/intervenção:** comparar o comportamento com R3 e executar `python3 -B testes/test_miniloja.py --codigo caso`: T1 teve 10/11 verificações aprovadas e, após T2, 11/11 passaram. Use "não informado" para metadados indisponíveis. O raciocínio e a decisão registrados são meus.
 
-**Revisão:** [ ] dois modos em T1; [ ] evidência localizada; [ ] T3 decidida; [ ] alternativa e limite; [ ] até uma página.
+**Revisão:** [x] dois modos em T1; [x] evidência localizada; [x] T3 decidida; [x] alternativa e limite; [ x] até uma página.
