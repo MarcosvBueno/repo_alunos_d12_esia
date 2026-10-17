@@ -1,6 +1,6 @@
 # Registro individual — AV1.3
 
-**Limite: uma página, incluindo evidências essenciais.** Estudante: [preencha seu nome] — Data: 17/10/2026
+**Limite: uma página, incluindo evidências essenciais.** Estudante: Marcos Vinicius Bueno Estevam — Data: 17/10/2026
 Origem: `caso/testes_existentes/` e `caso/regras.md` fictícios; modalidade: execução própria / transcrição (marque): execução assistida por IA, com comandos executados pelo assistente.
 
 | Teste suspeito                                 | Tipo de tautologia                             | Sabotagem que apliquei (ou raciocínio) | Continuou verde?                  |
