@@ -1,0 +1,117 @@
+{
+  "metadata": {
+    "descricao": "Snapshot do comportamento atual de calcular_total, antes da refatoracao.",
+    "origem": "caso/miniloja/calculo.py e carrinhos ficticios de caso/dados/carrinhos.json",
+    "gerado_em": "2026-10-17",
+    "comparacao": "igualdade exata do valor retornado; sem tolerancia",
+    "observacao": "Preserva o comportamento atual, inclusive possiveis divergencias do contrato R1. NATAL e testado com a flag desligada e ligada."
+  },
+  "cases": [
+    {
+      "id": "C1_sem_cupom_PE",
+      "input": {
+        "itens": [
+          {"sku": "CAMISA-M", "preco": 80.0, "qtd": 1},
+          {"sku": "BOLA-01", "preco": 50.0, "qtd": 1}
+        ],
+        "cupom": null,
+        "uf": "PE",
+        "promo_natal": false
+      },
+      "expected": 150.05
+    },
+    {
+      "id": "C2_sem_cupom_SP",
+      "input": {
+        "itens": [{"sku": "CHUTEIRA-42", "preco": 250.0, "qtd": 1}],
+        "cupom": null,
+        "uf": "SP",
+        "promo_natal": false
+      },
+      "expected": 267.5
+    },
+    {
+      "id": "C3_PROMO10_RJ",
+      "input": {
+        "itens": [{"sku": "BOLA-01", "preco": 19.99, "qtd": 3}],
+        "cupom": "PROMO10",
+        "uf": "RJ",
+        "promo_natal": false
+      },
+      "expected": 80.0
+    },
+    {
+      "id": "C1_VIP15_SP",
+      "input": {
+        "itens": [
+          {"sku": "CAMISA-M", "preco": 80.0, "qtd": 1},
+          {"sku": "BOLA-01", "preco": 50.0, "qtd": 1}
+        ],
+        "cupom": "VIP15",
+        "uf": "SP",
+        "promo_natal": false
+      },
+      "expected": 139.53
+    },
+    {
+      "id": "C3_FRETEGRATIS_PE",
+      "input": {
+        "itens": [{"sku": "BOLA-01", "preco": 19.99, "qtd": 3}],
+        "cupom": "FRETEGRATIS",
+        "uf": "PE",
+        "promo_natal": false
+      },
+      "expected": 62.97
+    },
+    {
+      "id": "C2_NATAL_inativo_PE",
+      "input": {
+        "itens": [{"sku": "CHUTEIRA-42", "preco": 250.0, "qtd": 1}],
+        "cupom": "NATAL",
+        "uf": "PE",
+        "promo_natal": false
+      },
+      "expected": 262.5
+    },
+    {
+      "id": "C2_NATAL_ativo_PE",
+      "input": {
+        "itens": [{"sku": "CHUTEIRA-42", "preco": 250.0, "qtd": 1}],
+        "cupom": "NATAL",
+        "uf": "PE",
+        "promo_natal": true
+      },
+      "expected": 223.55
+    },
+    {
+      "id": "C3_cupom_invalido_XX",
+      "input": {
+        "itens": [{"sku": "BOLA-01", "preco": 19.99, "qtd": 3}],
+        "cupom": "CUPOMFALSO",
+        "uf": "XX",
+        "promo_natal": false
+      },
+      "expected": 97.06
+    },
+    {
+      "id": "limite_200_sem_cupom_PE",
+      "input": {
+        "itens": [{"preco": 100.0, "qtd": 2}],
+        "cupom": null,
+        "uf": "PE",
+        "promo_natal": false
+      },
+      "expected": 223.55
+    },
+    {
+      "id": "empate_arredondamento_PE",
+      "input": {
+        "itens": [{"preco": 1.0, "qtd": 2}],
+        "cupom": null,
+        "uf": "PE",
+        "promo_natal": false
+      },
+      "expected": 15.64
+    }
+  ]
+}
