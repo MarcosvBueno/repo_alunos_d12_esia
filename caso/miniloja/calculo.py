@@ -64,14 +64,24 @@ def _taxa_servico(uf):
     return taxa
 
 
+def _calcular_subtotal(itens):
+    """Soma preço vezes quantidade, preservando a ordem recebida dos itens."""
+    subtotal = 0
+    for item in itens:
+        preco = item["preco"]
+        qtd = item["qtd"]
+        subtotal = subtotal + preco * qtd
+    return subtotal
+
+
 def calcular_total(itens, cupom=None, uf="PE"):
-    """Calcula o total do pedido."""
-    # soma dos itens
-    total = 0
-    for i in itens:
-        preco = i["preco"]
-        qtd = i["qtd"]
-        total = total + preco * qtd
+    """Calcula na ordem subtotal, desconto, frete e taxa definida por R1.
+
+    A extração do subtotal mantém as saídas float/round dos chamadores atuais;
+    divergências legadas no limite do frete e no arredondamento são mudanças
+    comportamentais e devem ser tratadas separadamente.
+    """
+    total = _calcular_subtotal(itens)
     # total = round(total, 2)  # tentamos arredondar aqui em 2023, desfeito
 
     # desconto
