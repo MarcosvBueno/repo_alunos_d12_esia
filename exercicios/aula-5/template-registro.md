@@ -1,24 +1,24 @@
 # Registro individual — AV1.5
 
-**Limite: uma página, incluindo evidências essenciais.** Estudante: ___ — Data: ___
-Origem: pull request fictício liberado no bloco; modalidade: execução própria / inspeção textual (marque).
+**Limite: uma página, incluindo evidências essenciais.** Estudante: Marcos Vinicius Bueno Estevam — Data: 01/11/2026
+Origem: pull request fictício liberado no bloco; modalidade: **execução própria** / inspeção textual (marque): comandos executados pelo assistente de IA em cópia temporária com o `git apply` do patch. Código em `caso/miniloja/`; testes em `caso/testes_existentes/`. Chamadas com `PYTHONPATH=caso`, `handlers as h` e pedidos dos usuários 1 e 2 já criados.
 
-| # | Onde (arquivo) | Problema e impacto | Severidade (bloqueia / comenta) | Correção e teste que falharia sem ela |
-| --- | --- | --- | --- | --- |
-| 1 |  |  |  |  |
-| 2 |  |  |  |  |
-| 3 |  |  |  |  |
-| 4 |  |  |  |  |
+| #   | Onde (arquivo)                              | Problema e impacto                                                                                                                                                                                   | Severidade (bloqueia / comenta) | Correção e teste que falharia sem ela                                                                                                                      |
+| --- | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | `exportacao.py:15`; `test_exportacao.py:17` | `todos()` ignora `usuario_id`: qualquer usuário baixa as vendas de todos (viola R4.1). `h.get_exportacao(1, "r4.csv")` trouxe as 2 linhas, e o teste do PR trava o defeito ao esperar `linhas == 2`. | **bloqueia**                    | Filtrar por`usuario_id` e corrigir o esperado para 1. Teste: exportar como usuário 1 gera só pedidos dele e `linhas == 1` (hoje, 2).                       |
+| 2   | `exportacao.py:17`                          | `nome_arquivo` sem validação: `../` ou caminho absoluto gravam fora de `exports/`. `h.get_exportacao(1, "../caso/regras.md")` deu 200 e sobrescreveu o contrato.                                     | **bloqueia**                    | Aceitar só nome simples (`os.path.basename`), senão 400. Teste: `"../fora.csv"` e caminho absoluto dão 400 sem criar arquivo (hoje, 200 e arquivo criado). |
+| 3   | `exportacao.py:24-26`                       | `except Exception: pass` esconde a falha e a linha 26 responde sucesso: `h.get_exportacao(1, "nao/existe.csv")` deu 200 sem gravar nada.                                                             | **bloqueia**                    | Capturar só`OSError` e responder 500. Teste: com `open` lançando `OSError`, status 500 (hoje, 200).                                                        |
+| 4   | `exportacao.py:10-11`                       | `_br` copia `formatar_moeda` (`formatacao.py:4`), com saída igual nos 5 valores comparados. Não viola o contrato; o custo é manter o formato em dois lugares.                                        | **comenta**                     | Importar`formatar_moeda`. Teste: com ela mockada para `"X"`, a coluna `total` sai `X` (hoje, erro).                                                        |
 
-| Alegação da descrição do PR | Confirmada ou refutada? | Evidência (comando, trecho) |
-| --- | --- | --- |
-| ___ |  |  |
-| ___ |  |  |
+| Alegação da descrição do PR                                    | Confirmada ou refutada?                                       | Evidência (comando, trecho)                                                                                                                                                                                                                                |
+| -------------------------------------------------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| "Todos os testes passam"; "27 testes passam"                   | Confirmada só na base do PR; não prova a exportação           | `python3 -B testes/test_miniloja.py --codigo caso --existentes`: base `2c2fc89`, 27 OK; minha branch, 31 e 2 falhas em `test_cadastro.py`, já presentes sem o PR. Com o CSV sabotado para 0 bytes, `test_exportacao` segue verde (mock, não lê o arquivo). |
+| "Não há mudanças de comportamento"; "Código revisado e seguro" | Primeira confirmada no código, com ressalva; segunda refutada | `handlers.py` só tem acréscimo; 11 verificações e golden master iguais antes e depois, mas a instalação quebra (abaixo). "Seguro" cai nos achados 1 e 2.                                                                                                   |
 
-**Dependência nova (nome, existe?, quem mantém?, necessária?):** ___
+**Dependência nova (nome, existe?, quem mantém?, necessária?):** `csv-export-helper==0.4.2`. Não existe: 404 no PyPI em `/pypi/csv-export-helper/json` e `/simple/csv-export-helper/` (controle `requests`: 200; 01/11/2026, sem instalar), e `pip3 install --dry-run --no-deps --only-binary=:all: -r caso/requirements.txt` dá `No matching distribution found`. Mantenedor: não há. Necessária: não; `exportacao.py` usa `csv` e o caso é só biblioteca padrão. Bloqueia: quebra a instalação e o nome livre permite slopsquatting.
 
-**Decisão sobre o merge e condição para aprovar:** ___ **Limite da revisão:** ___
+**Decisão sobre o merge e condição para aprovar:** não aprovo. Bloqueiam os achados 1, 2 e 3 e a dependência; o 4 pode ficar para depois. Aprovo quando o PR corrigir esses quatro pontos e trouxer os testes acima. Testei a condição em cópia com correção mínima: os 5 testes falham no PR e passam corrigidos, com 11 verificações e golden master OK e só as 2 falhas antigas. Quem aprova responde pelo código, por isso a decisão vem do que foi executado, não do texto do PR. **Limite da revisão:** sem análise estática nem testes de abuso ou concorrência. `usuario_id` vem do chamador, sem autenticação: o filtro só protege se esse id for confiável. `get_pedido` (`handlers.py:35`) também viola R4 (usuário 1 leu pedido do usuário 2), mas é anterior ao PR e pede correção à parte. Se o pacote passar a existir, segue bloqueado até alguém mostrar o que `csv` não resolve.
 
-**Procedência/IA:** não utilizada / ferramenta e modelo visíveis: ___; tarefa delegada e contexto: ___; trecho aproveitado: ___; minha verificação/intervenção: ___. Use "não informado" para metadados indisponíveis. O raciocínio e a decisão registrados são meus.
+**Procedência/IA:** não utilizada / ferramenta e modelo visíveis: Claude Code (extensão do VS Code), Claude Opus 5.5; tarefa delegada e contexto: com enunciado, template, `caso/regras.md` e PR, o assistente explicou o exercicio, rodou os comandos, consultou o PyPI e escreveu testes; trecho aproveitado: achados e evidências; minha verificação/intervenção: conferi os achados diretamente no código, revisei as saídas dos comandos e validei os testes apresentados. Avaliei as evidências, descartei conclusões sem suporte, confirmei a consulta ao PyPI e tomei a decisão final sobre a aprovação do PR. Use "não informado" para metadados indisponíveis. O raciocínio e a decisão registrados são meus.
 
-**Revisão:** [ ] quatro achados; [ ] alegações conferidas; [ ] dependência checada; [ ] decisão; [ ] até uma página.
+**Revisão:** [x] quatro achados; [x] alegações conferidas; [x] dependência checada; [x] decisão; [x] até uma página.
