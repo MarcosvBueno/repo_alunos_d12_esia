@@ -1,27 +1,27 @@
 # Registro individual — AV1.6
 
-**Limite: uma página, incluindo evidências essenciais.** Estudante: ___ — Data: ___
+**Limite: uma página, incluindo evidências essenciais.** Estudante: Marcos Vinicius Bueno Estevam — Data: 01/11/2026
 Origem: meus registros AV1.1 a AV1.3 e um contexto de time descrito de forma genérica.
 
-| Campo da medição | Meu desenho |
-| --- | --- |
-| Pergunta (uma frase) | ___ |
-| Decisão que depende da resposta | ___ |
-| Métrica primária | ___ |
-| Guardrail de qualidade | ___ |
-| Baseline (de onde vem, que período) | ___ |
-| Período e método de comparação | ___ |
-| Confundidores previstos | ___ |
-| Como a métrica poderia ser gamificada | ___ |
+| Campo da medição                      | Meu desenho                                                                                                                                                                                                                                                                                                      |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Pergunta (uma frase)                  | No meu time (web, revisão por pares, CI), exigir escopo e plano revisado nas mudanças com agente reduz o tempo até "pronto e verificado" sem piorar a qualidade?                                                                                                                                                 |
+| Decisão que depende da resposta       | Decido com o time, com regra fixada antes: escopo obrigatório se a mediana cair 15% ou mais sem estourar o guardrail; opcional se cair menos; fora se estourar.                                                                                                                                                  |
+| Métrica primária                      | Mediana do tempo por tarefa, do início ao merge com CI verde e revisão aprovada. Diff não serve: em AV1.2 caiu de 99 para 48 linhas e a revisão subiu de 4 para 6 min.                                                                                                                                           |
+| Guardrail de qualidade                | % de tarefas revertidas ou corrigidas em até 14 dias, no máximo 5 p.p. acima do baseline; o escore de mutação dos módulos tocados não pode cair.                                                                                                                                                                 |
+| Baseline (de onde vem, que período)   | Miniatura (16 e 17/10/2026): até verificado, T1 6 min em conversa e 2 min com escopo, T2 2 min; 0 idas e vindas; mutação 74% (23 de 31;`testes/mutacao_manual.py` em `2c2fc89`, reproduzido em 01/11). No time: 8 semanas antes do piloto, de git, CI e quadro; ainda não coletado, sem dado do empregador aqui. |
+| Período e método de comparação        | Piloto de 8 semanas, com sorteio por tarefa: com escopo ou fluxo atual. Comparo mediana e p75 por tipo, com ao menos 30 tarefas por grupo; abaixo disso, prorrogo.                                                                                                                                               |
+| Confundidores previstos               | Tamanho e tipo da tarefa, familiaridade com o código, aprendizado (na rodada 2 de AV1.2 eu já conhecia o código), troca de modelo, prazos, incidentes, efeito novidade.                                                                                                                                          |
+| Como a métrica poderia ser gamificada | Começar a tarefa quase pronta, aprovar revisão sem ler, escrever escopo genérico e tirar do piloto as tarefas difíceis.                                                                                                                                                                                          |
 
-**Contramedida contra a manipulação:** ___
+**Contramedida contra a manipulação:** resultado só por time e fora de avaliação individual; relógio começa no sorteio e tarefa sorteada não sai da análise; quem não revisou audita 3 PRs por semana.
 
-| Tarefa recorrente candidata | Frequência e custo atual | Verificação da saída (determinística) | Permissões mínimas e orçamento | Responsável |
-| --- | --- | --- | --- | --- |
-| ___ |  |  |  |  |
+| Tarefa recorrente candidata                                                                                                                                  | Frequência e custo atual                                                                                  | Verificação da saída (determinística)                                                                                                                  | Permissões mínimas e orçamento                                                                                                                                                                     | Responsável                                                                                   |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Propor teste para mutante sobrevivente da`main`, como PR em rascunho, nunca merge. Verificável, pouco variável, raio baixo (só teste novo), manter é barato. | Semanal; hoje manual e adiada. Estimo 2h por semana de um dev, a medir. Miniatura: 8 sobreviventes em 31. | Antes do PR: teste falha com o mutante e passa sem ele; suíte e golden master verdes; diff só em teste novo; sem dependência nova. Reprovou, descarta. | Container com cópia descartável, sem segredos do projeto, rede só para a API do modelo. Agendado, nunca em PR de fork. Um passo sem agente abre o PR. Teto: US$ 5, 15 min, 3 propostas por semana. | Eu respondo pela rotina; o revisor da semana confere o esperado no contrato e decide o merge. |
 
-**Limite da medição e condição para interromper ou rever:** ___
+**Limite da medição e condição para interromper ou rever:** meu baseline tem uma execução por condição, em tarefa fictícia: calibra o desenho, não prova ganho. Revert chega atrasado e não mede compreensão. Matar mutante não prova que o esperado está certo: `>` → `>=` dá os R$ 210,00 de R1 e morre em `test_calculo.py:40`, que fixa R$ 223,55; por isso o revisor confere o contrato. Interrompo o piloto se o guardrail estourar, se uma mudança causar incidente ou se a métrica entrar em avaliação individual; reinicio se o modelo trocar. Desligo a automação se agir fora das permissões ou se mais de metade das propostas for rejeitada em 4 semanas, e fico só com o relatório de mutação.
 
-**Procedência/IA:** não utilizada / ferramenta e modelo visíveis: ___; tarefa delegada e contexto: ___; trecho aproveitado: ___; minha verificação/intervenção: ___. Use "não informado" para metadados indisponíveis. O raciocínio e a decisão registrados são meus.
+**Procedência/IA:** não utilizada / ferramenta e modelo visíveis: Claude Code (VS Code), Claude Opus 5.5; tarefa delegada e contexto: com enunciado, template e meus registros AV1.1 a AV1.3, o assistente consolidou os números e reexecutou a mutação; trecho aproveitado: desenho deste registro; minha verificação/intervenção:revisei os números consolidados, conferi as saídas da reexecução da mutação e comparei as conclusões com meus registros AV1.1 a AV1.3. Ajustei o desenho da medição, os critérios de qualidade, os limites e as condições de interrupção para refletirem minhas decisões. Use "não informado" para metadados indisponíveis. O raciocínio e a decisão registrados são meus.
 
-**Revisão:** [ ] medição completa; [ ] risco de manipulação; [ ] automação com verificação; [ ] limite; [ ] até uma página.
+**Revisão:** [x] medição completa; [x] risco de manipulação; [x] automação com verificação; [x] limite; [x] até uma página.
