@@ -13,11 +13,13 @@ class TestAcessoAV3(unittest.TestCase):
         return pedido
 
     def test_usuario_nao_ve_pedido_de_outro_usuario(self):
-        # R4.1: o usuário 202 não pode ver o pedido do usuário 101.
+        # R4.1: vale para id maior ou menor que o do dono, e para chamada sem usuário.
         pedido = self._criar_pedido(101)
-        status, corpo = handlers.get_pedido(202, pedido["id"])
-        self.assertEqual(status, 404)
-        self.assertNotIn("itens", corpo)
+        for intruso in (202, 50, 0, None):
+            with self.subTest(intruso=intruso):
+                status, corpo = handlers.get_pedido(intruso, pedido["id"])
+                self.assertEqual(status, 404)
+                self.assertNotIn("itens", corpo)
 
     def test_pedido_de_outro_responde_igual_a_pedido_inexistente(self):
         # R4.1: a resposta não pode confirmar que o pedido existe.
@@ -30,6 +32,12 @@ class TestAcessoAV3(unittest.TestCase):
         status, corpo = handlers.get_pedido(101, pedido["id"])
         self.assertEqual(status, 200)
         self.assertEqual(corpo, pedido)
+
+    def test_dono_e_reconhecido_pelo_valor_do_id(self):
+        # R4.1: dois inteiros iguais podem ser objetos diferentes; vale o valor do id.
+        pedido = self._criar_pedido(int("100000"))
+        status, _ = handlers.get_pedido(int("100000"), pedido["id"])
+        self.assertEqual(status, 200)
 
 
 if __name__ == "__main__":
