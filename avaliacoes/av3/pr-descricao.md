@@ -45,3 +45,73 @@ Agente de codificação com escopo declarado (Claude Code, Claude Opus 5.5).
 - **Oráculo:** forte. R4.1 define o esperado, sem depender do código atual.
 - **Familiaridade:** alta. O defeito já estava localizado e reproduzido desde a AV1.5.
 - **Alternativa comparada:** editar com escopo, em conversa. A correção é pequena e esse modo bastaria para o código. Escolhi o agente porque a parte cara aqui é a prova: separar vermelho e verde no histórico e rodar mutações em cópia.
+
+## Como foi verificado
+
+Execuções em Python 3.14.7, na raiz do repositório, salvo indicação.
+
+```text
+$ python3 -B testes/test_miniloja.py --codigo caso
+Ran 11 tests ... OK
+
+$ python3 caso/validar_golden_master.py
+OK: 10 casos iguais ao golden master.
+
+$ python3 -B testes/test_miniloja.py --codigo caso --existentes
+Ran 34 tests ... FAILED (failures=2)
+FAIL: test_cadastro_sem_nome_e_rejeitado
+FAIL: test_cadastro_valido
+
+$ cd caso && python3 -B -m unittest testes_existentes.test_acesso_av3
+Ran 4 tests ... OK
+```
+
+As 2 falhas de `test_cadastro.py` já existem na `main` (30 testes, as mesmas 2 falhas) e ficaram fora do escopo. Os 4 testes a mais são os deste PR.
+
+Barreira de escopo, que não deve imprimir nada:
+
+```bash
+git diff --name-only main...av3 | grep -v -x -E 'caso/miniloja/handlers\.py|caso/testes_existentes/test_acesso_av3\.py|avaliacoes/av3/(template-registro|pr-descricao)\.md'
+```
+
+## Teste que falharia sem a mudança
+
+`test_usuario_nao_ve_pedido_de_outro_usuario` e `test_pedido_de_outro_responde_igual_a_pedido_inexistente`, em `caso/testes_existentes/test_acesso_av3.py`. Para repetir pelo histórico:
+
+```bash
+git checkout d606929   # teste sem a correção: FAILED (failures=2), 200 != 404
+(cd caso && python3 -B -m unittest testes_existentes.test_acesso_av3)
+git checkout aa55ae1   # mesmo teste com a correção: OK
+(cd caso && python3 -B -m unittest testes_existentes.test_acesso_av3)
+git checkout av3
+```
+
+Os 4 testes finais contra o `handlers.py` da `main` dão `FAILED (failures=5)`: um teste de resposta igual e os 4 intrusos (202, 50, 0 e `None`).
+
+## Mutação de `get_pedido`
+
+Executada em cópia descartável, com `test_acesso_av3` e `test_handlers`. A ferramenta `testes/mutacao_manual.py` não foi usada porque não tem mutantes dessa função e `testes/` não pode ser alterada.
+
+| Mutante | Primeira versão (`aa55ae1`) | Versão final (`177b13e`) |
+| --- | --- | --- |
+| Sem a checagem de dono | morto | morto |
+| `!=` vira `==` | morto | morto |
+| `!=` vira `<` | **sobreviveu** | morto |
+| `!=` vira `>` | morto | morto |
+| `!=` vira `is not` | **sobreviveu** | morto |
+| `or` vira `and` | morto | morto |
+| Compara `pedido["id"]` | morto | morto |
+| `usuario_id` vazio pula a checagem | **sobreviveu** | morto |
+| `403` para pedido de outro | morto | morto |
+| `404` com corpo diferente para pedido de outro | morto | morto |
+| `404` devolvendo o pedido no corpo | morto | morto |
+
+Para repetir um mutante: troque `!=` por `<` em `caso/miniloja/handlers.py:38`, rode o comando de acesso acima e desfaça com `git checkout caso/miniloja/handlers.py`.
+
+## Dependências novas
+
+Nenhuma.
+
+## O que a IA errou
+
+Os erros, a detecção e as correções estão em `avaliacoes/av3/template-registro.md`. Os sobreviventes acima são o principal deles, corrigidos no commit `177b13e`.
